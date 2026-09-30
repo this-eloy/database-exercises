@@ -1,23 +1,23 @@
 -- exercicio 1
 
-CREATE TABLE produto(
-    id_produto int primary key,
-    nome varchar(50),
-    preco number(26)
+CREATE TABLE produtos(
+    id_produto INT PRIMARY KEY,
+    nome VARCHAR2(50),
+    preco NUMBER(10,2)
 );
 
-CREATE SEQUENCE seq_produto_id 
-INCREMENT BY 1
+CREATE SEQUENCE seq_produto_id
 START WITH 100
+INCREMENT BY 1
 NOMAXVALUE
 NOCYCLE;
 
-INSERT INTO produto(id_produto, nome, preco)
-VALUES(seq_produto_id.NEXTVAL, 'Produto 1', 50);
+INSERT INTO produtos (id_produto, nome, preco)
+VALUES (seq_produto_id.NEXTVAL, 'Produto 1', 50.00);
 
 -- exercicio 2
--- a pseudocoluna NEXTVAL acesso o próximo valor de um id (que não está ocupado), sendo útil para adicionar algo novo, 
--- enquanto o CURRVAL acessa o valor atual de um id, sendo útil para sequencias que precisa acessa o ultimo valor para prosseguir
+-- a pseudocoluna NEXTVAL gera e pega o proximo valor da sequencia (avanca o contador),
+-- enquanto o CURRVAL apenas pega o valor atual que já foi gerado na sessao, sem avancar a sequencia
 
 SELECT seq_produto_id.CURRVAL
 FROM DUAL;
@@ -44,16 +44,13 @@ CREATE TABLE pedidos (
 CREATE SEQUENCE seq_transacoes
 INCREMENT BY 1
 NOMAXVALUE
-NO CACHE
+NOCACHE
 NOCYCLE;
 
--- o cache funciona como um "checkpoint" do sistema, mante-lo em 0 (NOCACHE) faz com que o sistema fique lento
--- mas mante-lo em um valor alto significa que caso o sistema caia, significa que muitos dados podem ser perdidos
+-- o cache guarda uma quantidade de numeros na memoria ram para nao precisar acessar o disco toda hora
+-- o NOCACHE deixa lento porque força a gravar no disco a cada insert, gerando fila de espera no banco
+-- se o sistema cair com CACHE, perde-se apenas os numeros guardados na ram (gera buracos/gaps na sequencia), mas nao dados da tabela
 
-ALTER SEQUENCE seq_transacoes
-INCREMENT BY 1
-NOMAXVALUE
-CACHE 20
-NOCYCLE;
+ALTER SEQUENCE seq_transacoes CACHE 50;
 
 
